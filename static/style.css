@@ -1,0 +1,13 @@
+body {
+    min-width: 600px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    font-family: sans-serif;
+}
+
+#container {
+    width: 600px;
+    margin: 20px auto;
+    text-align: left;
+}
