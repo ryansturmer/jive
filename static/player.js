@@ -10,3 +10,10 @@ $('#prev_button').click(function(event) {
 $('#next_button').click(function(event) {
     $.post('/next');
 });
+
+$('#db_search').submit(function(event) {
+    event.preventDefault();
+    $.post('/search_db', $('#db_search').serialize(), function(data) {
+        refresh();
+    });
+});
