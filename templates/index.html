@@ -3,14 +3,17 @@
 <head>
     <meta charset="utf-8">
     <title>Music Player</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css" />
 </head>
 <body>
-    <div id="container">
-        <div id="play_button">PLAY</div>
-        <div id="stop_button">STOP</div>
-    </div>
+    MUSIC PLAYER <br />
+    <button id="play_button" class="btn">PLAY</button>
+    <button id="stop_button" class="btn">STOP</button>
+    <button id="next_button" class="btn">NEXT</button>
+    <button id="prev_button" class="btn">PREV</button>
     <!-- jquery scripts -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='player.js') }}"></script>
 </body>
 </html>
