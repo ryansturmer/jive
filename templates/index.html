@@ -7,16 +7,28 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css" />
 </head>
 <body>
-    MUSIC PLAYER <br />
-    <button id="play_button" class="btn">PLAY</button>
-    <button id="stop_button" class="btn">STOP</button>
-    <button id="next_button" class="btn">NEXT</button>
-    <button id="prev_button" class="btn">PREV</button>
-    <br/>
-    <br/>
-    <form class="search" id="db_search">
-        <input type="text" class="search-query pull-center" placeholder="Search Library..." />
-    </form>
+    <div class="container">
+    <div class="row">
+        <div class="span8 offset2">
+            <h2>MUSIC PLAYER</h2>
+            <button id="play_button" class="btn"><i class="icon-play"></i>PLAY</button>
+            <button id="stop_button" class="btn"><i class="icon-stop"></i>STOP</button>
+            <button id="next_button" class="btn"><i class="icon-step-forward"></i>NEXT</button>
+            <button id="prev_button" class="btn">PREV</button>
+            <br/>
+            <br/>
+            <form class="search" id="db_search">
+                <input type="text" name="text" class="search-query pull-center" placeholder="Search Library..." />
+            </form>
+            <br/>
+            <table class="table" id="songs">
+                <thead>
+                    <tr><th>Title</th><th>Artist</th></tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
     <!-- jquery scripts -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
     <script src="{{ url_for('static', filename='player.js') }}"></script>

@@ -38,5 +38,11 @@ def prev():
     MODEL.previous()
     return ''
 
+@app.route('/db_search', methods=['POST'])
+def db_search():
+    search_type = 'any'
+    search_term = request.form['text']
+    results = MODEL.find(search_type, search_term)
+    return json.dumps(results)
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

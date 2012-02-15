@@ -250,6 +250,10 @@ class MPDClient(object):
     @mpd_command(returns=None)
     def load(self, name):pass
 
+    # The music database
+    @mpd_command(returns=list)
+    def find(self, type, what): pass
+
 if __name__ == "__main__":
     client = MPDClient('carmen')
     print client.version
