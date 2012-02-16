@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='jquery/css/ui-lightness/jquery-ui-1.8.17.custom.css') }}" />
+</head>
+<body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">Music Player</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="/">Playlist</a></li>
+              <li><a href="search">Search Results</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+        
+        <ul class="nav pull-right">
+            <li><a><i class="icon-step-backward icon-white mpd_previous_button"></i></a></li>
+            <li><a><i class="icon-play icon-white mpd_play_button"></i></a></li>
+            <li><a><i class="icon-pause icon-white mpd_pause_button"></i></a></li>
+            <li><a><i class="icon-stop icon-white mpd_stop_button"></i></a></li>
+            <li><a><i class="icon-step-forward icon-white mpd_next_button"></i></a></li>
+            <li><a href="#">Search Music</a></li>
+            <li class="">
+            <form class="navbar-search" id="search" action="search">
+                <input type="text" name="q" class="search-query" placeholder="Search Library..." />
+            </form>
+            </li>
+        </ul>
+        </div>
+      </div>
+    </div>
+
+    {% block content %}
+
+    {% endblock %}
+    
+    <script src="{{ url_for('static', filename='jquery/js/jquery-1.7.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='jquery/js/jquery-ui-1.8.17.custom.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='player.js') }}"></script>
+</body>
+</html>

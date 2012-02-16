@@ -28,6 +28,7 @@ MPD_TYPES = {'file' : str,
              'db_update' : timestamp,
              'id' : int,
              'time' : int,
+             'mixrampdb' : float
              }
 
 
@@ -253,6 +254,9 @@ class MPDClient(object):
     # The music database
     @mpd_command(returns=list)
     def find(self, type, what): pass
+    
+    @mpd_command(returns=list)
+    def search(self, type, what): pass
 
 if __name__ == "__main__":
     client = MPDClient('carmen')

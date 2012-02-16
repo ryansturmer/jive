@@ -9,7 +9,33 @@ import mpd
 HOST = 'carmen'
 PORT = '6600'
 
-MODEL = mpd.MPDClient(HOST, PORT)
+
+class Model(object):
+    def __init__(self, host, port):
+        self.client = mpd.MPDClient(host, port)
+        self.last_search_results = {}
+
+    def next(self): self.client.next()
+    def play(self): self.client.play()
+    def previous(self): self.client.previous()
+    def stop(self): self.client.stop()
+
+    def search(self, type, what):
+        results = self.client.search(type, what)
+        for result in results:
+            if 'title' not in result:
+                result['title'] = "NO TITLE"
+            if 'artist' not in result:
+                result['artist'] = ''
+        self.last_search_results = results
+        return results
+    def status(self):
+        status = self.client.status()
+        return status
+
+    def playlistinfo(self):
+        return self.client.playlistinfo()
+MODEL = Model(HOST, PORT)
 # Flask Code
 app = Flask(__name__)
 
@@ -38,11 +64,26 @@ def prev():
     MODEL.previous()
     return ''
 
-@app.route('/db_search', methods=['POST'])
-def db_search():
+@app.route('/search', methods=['GET','POST'])
+def search():
+    print "Search"
     search_type = 'any'
-    search_term = request.form['text']
-    results = MODEL.find(search_type, search_term)
-    return json.dumps(results)
+    search_term = request.args.get('q', None)
+
+    results = MODEL.search(search_type, search_term) if search_term else MODEL.last_search_results
+    
+    return render_template('search_results.html', results=results)
+
+@app.route('/playlist', methods=['GET'])
+def playlist():
+    print "PL"
+    return json.dumps(MODEL.playlistinfo())
+
+
+@app.route('/status', methods=['GET'])
+def status():
+    status = MODEL.status()
+    print status
+    return json.dumps(status)
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
