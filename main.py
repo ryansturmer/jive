@@ -1,7 +1,7 @@
 import datetime
 import json
 import uuid
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 
 # MPD Stuff
 import mpd
@@ -9,11 +9,20 @@ import mpd
 HOST = 'carmen'
 PORT = '6600'
 
+def normalize(d, mapping):
+    for key, alts in mapping.items():
+        if key not in d or not d[key]:
+            for alt in alts:
+                if alt in d and d[alt]:
+                    d[key] = d[alt]
+        if key not in d:
+            d[key] = "No %s" % key.capitalize()
 
 class Model(object):
     def __init__(self, host, port):
         self.client = mpd.MPDClient(host, port)
         self.last_search_results = {}
+        self.last_search = (None, None)
 
     def next(self): self.client.next()
     def play(self): self.client.play()
@@ -21,20 +30,38 @@ class Model(object):
     def stop(self): self.client.stop()
 
     def search(self, type, what):
+        self.last_search = (type, what)
         results = self.client.search(type, what)
+        results = [x for x in results if 'file' in x and x['file'].strip() != '']
         for result in results:
-            if 'title' not in result:
-                result['title'] = "NO TITLE"
-            if 'artist' not in result:
-                result['artist'] = ''
+            normalize(result, {'title' : ('file',)})
         self.last_search_results = results
         return results
     def status(self):
         status = self.client.status()
+        try:
+            a,b = status.pop('time')
+            status['time'] = a.seconds
+            status['duration'] = b.seconds
+        except:
+            pass
         return status
 
     def playlistinfo(self):
-        return self.client.playlistinfo()
+        info = self.client.playlistinfo()
+        for item in info:
+            normalize(item, {'title' : ('file',)})
+        return info
+
+    def listplaylists(self):
+        info = self.client.listplaylists()
+        print info
+        return info
+
+    def add(self, *songs):
+        for song in songs:
+            self.client.add(song)
+
 MODEL = Model(HOST, PORT)
 # Flask Code
 app = Flask(__name__)
@@ -45,7 +72,6 @@ def index():
 
 @app.route('/play', methods=['POST'])
 def play():
-    print "Playing thing..."
     MODEL.play()
     return ''
 
@@ -64,26 +90,64 @@ def prev():
     MODEL.previous()
     return ''
 
+@app.route('/setvol', methods=['POST'])
+def prev():
+    try:
+        vol = request.form['volume']
+    except KeyError, e:
+        raise e
+    MODEL.client.setvol(vol)
+    return ''
+
+@app.route('/clear_playlist', methods=['POST'])
+def clear_playlist():
+    MODEL.client.clear()
+    return ''
+
+@app.route('/load_playlist', methods=['POST'])
+def load_playlist():
+    MODEL.client.load(request.form['playlist'])
+
 @app.route('/search', methods=['GET','POST'])
 def search():
-    print "Search"
     search_type = 'any'
     search_term = request.args.get('q', None)
-
     results = MODEL.search(search_type, search_term) if search_term else MODEL.last_search_results
-    
+    for result in results:
+        result['file'] = result['file'].replace("'", "\\'")
     return render_template('search_results.html', results=results)
+
+@app.route('/add', methods=['POST'])
+def add():
+    for item in request.form:
+        MODEL.add(item)
+    return json.dumps(MODEL.status())
 
 @app.route('/playlist', methods=['GET'])
 def playlist():
-    print "PL"
-    return json.dumps(MODEL.playlistinfo())
+    info = MODEL.playlistinfo()
+    return json.dumps(info)
 
+@app.route('/playlists', methods=['GET'])
+def playlists():
+    results = MODEL.listplaylists()
+    return render_template('playlists.html', results=results)
 
 @app.route('/status', methods=['GET'])
 def status():
     status = MODEL.status()
-    print status
     return json.dumps(status)
+
+@app.route('/now_playing', methods=['GET'])
+def now_playing():
+    p = MODEL.client.currentsong()
+    print p
+    return json.dumps(p)
+
+@app.route('/shuffle', methods=['POST'])
+def shuffle():
+    MODEL.client.shuffle()
+    return ''
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

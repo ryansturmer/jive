@@ -7,6 +7,10 @@ def timestamp(t):
 def duration(t):
     return datetime.timedelta(seconds=int(t))
 
+def time(t):
+    a,b = t.split(":")
+    return datetime.timedelta(seconds=int(a)), datetime.timedelta(seconds=int(b))
+
 MPD_TYPES = {'file' : str,
              'volume': int,
              'repeat': bool,
@@ -37,10 +41,12 @@ def parse_lines(lines, types):
     retval = [dict()]
     for line in lines:
         toks = line.split(':')
-        key = toks[0].lower().strip()
+        key = unicode(toks[0].lower().strip())
         type_lookup = types if key in types else MPD_TYPES
         try:
-            value = type_lookup.get(key, str)((':'.join(toks[1:])).strip())
+            value = type_lookup.get(key, unicode)((':'.join(toks[1:])).strip())
+            if isinstance(value, str):
+                value = unicode(value)
         except ValueError:
             print "Problem Parsing %s" % key
             print "  -> %s" % value
@@ -50,7 +56,12 @@ def parse_lines(lines, types):
     return retval
 
 def cmd_from_function(f, *args):
-    return ('%s %s' % (f.__name__, ' '.join(map(str, args)))).strip()
+    def scrub(arg):
+        if isinstance(arg, str) or isinstance(arg, unicode):
+            return '"%s"' % arg.replace('"', '\"')
+        else:
+            return str(arg)
+    return ('%s %s' % (f.__name__, ' '.join(map(scrub, args)))).strip()
 
 # Decorator that makes a magical MPD command
 def mpd_command(returns=None, types=None):
@@ -101,10 +112,9 @@ class MPDClient(object):
                     line = []
                     if s.startswith('ACK') or s.startswith('OK'):
                         if s.startswith('ACK'):
-                            print s # TODO Actually parse error here and raise an exception
+                            raise Exception(s)
                         done = True
                         break
-                    #print s
                     lines.append(s)
                 else:
                     line.append(c)
@@ -127,7 +137,7 @@ class MPDClient(object):
     @mpd_command
     def idle(self):pass
     
-    @mpd_command(returns=dict, types={'playlist': int})
+    @mpd_command(returns=dict, types={'playlist': int, 'time':time})
     def status(self): pass
 
     @mpd_command(returns=dict)
@@ -190,8 +200,8 @@ class MPDClient(object):
     @mpd_command(returns=None)
     def add(self, uri): pass
 
-    @mpd_command(returns=int)
-    def add(self, uri, position=''): pass
+    #@mpd_command(returns=int)
+    #def add(self, uri, position=''): pass
 
     @mpd_command(returns=None)
     def clear(self):pass
@@ -230,7 +240,7 @@ class MPDClient(object):
     def prioid(self, priority, *ids): pass
 
     @mpd_command(returns=None)
-    def shuffle(self, range): pass
+    def shuffle(self, range=''): pass
 
     @mpd_command(returns=None)
     def swap(self, a, b): pass

@@ -1,7 +1,12 @@
 body {
-    min-width: 600px;
-    margin: 10px auto;
-    padding: 10px auto;
-    text-align: center;
-    font-family: sans-serif;
+    padding-top: 40px;
+}
+
+.row_hilite {
+    background-color: #cccccc;
+}
+
+html, body {
+    height: 100%;
+    background: url(/static/images/speaker_bkgnd.png) no-repeat center center fixed transparent;
 }

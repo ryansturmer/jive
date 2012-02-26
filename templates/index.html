@@ -1,20 +1,47 @@
 {% extends "base.html" %}
 {% block content %} 
-    <div class="container mpd_page" id="mpd_playlist_page">
+    <div class="container">
+        <div class="subnav">
+            <ul class="nav nav-pills">
+                <li><a href="#" id="mpd_shuffle_playlist">Shuffle Playlist</a></li>
+                <li><a href="#" id="mpd_clear_playlist">Clear Playlist</a></li>
+            </ul>
+        </div>
         <div class="row">
-            <div class="span8 offset2">
-                <div id="songpos"/>
+            <div class="span12">
+                <h2 id="mpd_np_title"></h2>        
+                <h3 id="mpd_np_artist"></h3>
+                <br />
+                <div id="mpd_seek_slider"></div>
+                <br />
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="span12">
                 <table class="table" id="mpd_playlist">
                     <thead>
-                        <tr><th>Title</th><th>Artist</th></tr>
+                        <tr><th>Title</th><th>Artist</th><th>Duration</th></tr>
                     </thead>
                     <tr id="mpd_playlist_row_template" style="display:none;">
-                        <td class="mpd_title"><!--title--></td>
-                        <td class="mpd_artist"><!--artist--></td>
+                        <td class="mpd_title"></td>
+                        <td class="mpd_artist"></td>
+                        <td class="mpd_duration"></td>
                     </tr>
                 </table>
             </div>
         </div>
     </div> 
+{% endblock %}
+
+
+{% block code %}
+<script language="javascript">
+    $('#mpd_seek_slider').slider({'range':'min', 'animate':'fast'});
+    status_update();
+    now_playing_update();
+    playlist_update();
+    setInterval(now_playing_update, 1000);
+</script>
 {% endblock %}
 

@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Music Player</title>
+    <title>Jive</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='jquery/css/ui-lightness/jquery-ui-1.8.17.custom.css') }}" />
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/speaker-icon-16x16.png')}}" />
 </head>
 <body>
     <div class="navbar navbar-fixed-top">
@@ -16,20 +17,28 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="#">Music Player</a>
+          <a class="brand" href="/">Jive</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="/">Playlist</a></li>
-              <li><a href="search">Search Results</a></li>
+              <li><a id="mpd_header_playlist" href="/">Now Playing</a></li>
+              <li><a id="mpd_header_playlists" href="/playlists">Playlists</a></li>
             </ul>
         </div><!--/.nav-collapse -->
         
         <ul class="nav pull-right">
-            <li><a><i class="icon-step-backward icon-white mpd_previous_button"></i></a></li>
-            <li><a><i class="icon-play icon-white mpd_play_button"></i></a></li>
-            <li><a><i class="icon-pause icon-white mpd_pause_button"></i></a></li>
-            <li><a><i class="icon-stop icon-white mpd_stop_button"></i></a></li>
-            <li><a><i class="icon-step-forward icon-white mpd_next_button"></i></a></li>
+            <!-- <li class="dropdown" id="volume">
+                <a class="dropdown-toggle" href="#volume">Volume</a>
+                <div class="dropdown-menu" style="width:20px; height:210px;">
+                    <div id="mpd_header_volume" style="width:10px; height:200px;"> </div>
+                </div>
+                </li> -->
+            <li><a href="#">Volume:</a></li>
+            <li><a style="width:100px; valign:middle;"><div id="mpd_header_volume"></div></a></li>
+            <li><a href="#"><i class="icon-step-backward icon-white mpd_previous_button"></i></a></li>
+            <li><a href="#"><i class="icon-play icon-white mpd_play_button"></i></a></li>
+            <li><a href="#"><i class="icon-pause icon-white mpd_pause_button"></i></a></li>
+            <li><a href="#"><i class="icon-stop icon-white mpd_stop_button"></i></a></li>
+            <li><a href="#"><i class="icon-step-forward icon-white mpd_next_button"></i></a></li>
             <li><a href="#">Search Music</a></li>
             <li class="">
             <form class="navbar-search" id="search" action="search">
@@ -47,6 +56,10 @@
     
     <script src="{{ url_for('static', filename='jquery/js/jquery-1.7.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='jquery/js/jquery-ui-1.8.17.custom.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='player.js') }}"></script>
+
+    {% block code %}
+    {% endblock %}
 </body>
 </html>

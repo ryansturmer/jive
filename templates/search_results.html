@@ -1,20 +1,81 @@
 {% extends "base.html" %}
-{% block content %} 
+{% block content %}
     <div class="container">
+        <div class="subnav nav-fixed-top">
+            <ul class="nav nav-pills">
+                <li><a id="mpd_clear_playlist_button" href="#">Clear Current Playlist</a></li>
+                <li><a id="mpd_add_all_button" href="#">Add All</a></li>
+                <li><a id="mpd_add_selected_button" href="#">Add Selected</a></li>
+            </ul>
+        </div>
         <div class="row">
-            <div class="span8 offset2">
+            <div class="span12">
+                <h2>Search Results ({{results | length}})</h2>        
+                <br />
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <form id="mpd_add_form">
                 <table class="table">
                     <thead>
                         <tr><th>Title</th><th>Artist</th></tr>
                     </thead>
                     {% for result in results %}
-                    <tr>
+                    <tr id="row_{{loop.index}}" onclick="result_toggle(event, '{{result.file | safe }}')">
                         <td>{{result.title}}</td>
                         <td>{{result.artist}}</td>
                     </tr>
                     {% endfor %}
                 </table>
+                </form>
             </div>
         </div>
     </div> 
+{% endblock %}
+
+{% block code %}
+<script language="javascript">
+    selected_songs = {};
+    all_songs = {
+        {% for result in results %}
+        '{{result.file | safe}}' : null,
+        {% endfor %}
+    };
+
+    function result_toggle(event, filename) {
+        row = $(event.target).parent()
+        if (filename in selected_songs) {
+            delete selected_songs[filename];
+            row.removeClass('row_hilite');
+        } 
+        else {
+            selected_songs[filename] = null;
+            row.addClass('row_hilite');
+        }
+    };
+
+    $('#mpd_add_all_button').click(function() {
+        $.post('/add', $.param(all_songs), function(data) {
+            status_update();
+        });
+    });
+
+    $('#mpd_add_selected_button').click(function() {
+        $.postJSON('/add', $.param(selected_songs), function(data) {
+            selected_songs = {};
+            $('.row_hilite').hide();
+            status_update();
+        });
+    });
+
+    $('#mpd_clear_playlist_button').click(function() {
+        $.post('/clear_playlist', null, function(data) {
+            status_update();
+        });
+    });
+
+    // On Page init:
+    status_update();
+</script>
 {% endblock %}

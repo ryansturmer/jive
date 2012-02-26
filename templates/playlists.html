@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <div class="subnav nav-fixed-top">
+            <ul class="nav nav-pills">
+                <li><a id="mpd_clear_playlist" href="#">Clear Current Playlist</a></li>
+            </ul>
+        </div>
+
+        <div class="row">
+            <div class="span12">
+                <h2>Playlists</h2>        
+                <br />
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <form id="mpd_add_form">
+                <table class="table">
+                    <thead>
+                        <tr><th>Playlist</th><th>&nbsp;</th></tr>
+                    </thead>
+                    {% for result in results %}
+                    <tr id="row_{{loop.index}}">
+                        <td>{{result.playlist}}</td>
+                        <td style="text-align:right;"><a class="btn" href="#" onclick="load_playlist('{{result.playlist}}')">Replace</a></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                </form>
+            </div>
+        </div>
+    </div> 
+{% endblock %}
+
+{% block code %}
+<script language="javascript">
+    // On Page init:
+    status_update();
+</script>
+{% endblock %}
