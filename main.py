@@ -141,7 +141,6 @@ def status():
 @app.route('/now_playing', methods=['GET'])
 def now_playing():
     p = MODEL.client.currentsong()
-    print p
     return json.dumps(p)
 
 @app.route('/shuffle', methods=['POST'])
