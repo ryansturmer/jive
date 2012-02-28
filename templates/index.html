@@ -9,8 +9,8 @@
         </div>
         <div class="row">
             <div class="span12">
-                <h2 id="mpd_np_title"></h2>        
-                <h3 id="mpd_np_artist"></h3>
+                <h2 id="mpd_np_title">{{status.title or "Stopped"}}</h2>        
+                <h3 id="mpd_np_artist">{{status.artist or "Click play to continue" }}</h3>
                 <br />
                 <div id="mpd_seek_slider"></div>
                 <br />
@@ -23,11 +23,14 @@
                     <thead>
                         <tr><th>Title</th><th>Artist</th><th>Duration</th></tr>
                     </thead>
-                    <tr id="mpd_playlist_row_template" style="display:none;">
-                        <td class="mpd_title"></td>
-                        <td class="mpd_artist"></td>
-                        <td class="mpd_duration"></td>
+                    {% for song in playlist %}
+                    <tr id="song_{{song.pos}}">
+                        <td>{{song.title}}</td>
+                        <td>{{song.artist}}</td>
+                        <td>{{song.duration}}</td>
+                        <td style="text-align:right;"><a class="close" onclick="song_delete(event, {{song.pos}})">&times;</a></td>
                     </tr>
+                    {% endfor %}
                 </table>
             </div>
         </div>
@@ -40,7 +43,14 @@
     $('#mpd_seek_slider').slider({'range':'min', 'animate':'fast'});
     status_update();
     now_playing_update();
-    playlist_update();
+
+    function song_delete(event, song) {
+        row = $(event.target).parent()
+        $.post('/song_delete', $.param({'song': song}), function() {
+            window.location.reload();
+        }); 
+    };
+
     setInterval(now_playing_update, 1000);
 </script>
 {% endblock %}

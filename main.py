@@ -6,9 +6,6 @@ from flask import Flask, render_template, request, redirect
 # MPD Stuff
 import mpd
 
-HOST = 'carmen'
-PORT = '6600'
-
 def normalize(d, mapping):
     for key, alts in mapping.items():
         if key not in d or not d[key]:
@@ -17,6 +14,14 @@ def normalize(d, mapping):
                     d[key] = d[alt]
         if key not in d:
             d[key] = "No %s" % key.capitalize()
+
+def fmt_time(seconds):
+    hours, remainder = divmod(seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    if hours:
+        return '%d:%d:%02d' % (hours, minutes, seconds)
+    else:
+        return '%d:%02d' % (minutes, seconds)
 
 class Model(object):
     def __init__(self, host, port):
@@ -49,8 +54,10 @@ class Model(object):
 
     def playlistinfo(self):
         info = self.client.playlistinfo()
+        info = [item for item in info if item]
         for item in info:
             normalize(item, {'title' : ('file',)})
+            item['duration'] = fmt_time(item['time'])
         return info
 
     def listplaylists(self):
@@ -61,14 +68,18 @@ class Model(object):
     def add(self, *songs):
         for song in songs:
             self.client.add(song)
-
+HOST = 'carmen'
+PORT = '6600'
 MODEL = Model(HOST, PORT)
 # Flask Code
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    playlist = MODEL.playlistinfo()
+    status = MODEL.status()
+    print status
+    return render_template('index.html', playlist=playlist, status=status)
 
 @app.route('/play', methods=['POST'])
 def play():
@@ -98,7 +109,15 @@ def prev():
         raise e
     MODEL.client.setvol(vol)
     return ''
-
+@app.route('/song_delete', methods=['POST'])
+def song_delete():
+    try:
+        song = request.form['song']
+    except KeyError, e:
+        raise e
+    print song
+    MODEL.client.delete(song)
+    return ''
 @app.route('/clear_playlist', methods=['POST'])
 def clear_playlist():
     MODEL.client.clear()
@@ -107,6 +126,7 @@ def clear_playlist():
 @app.route('/load_playlist', methods=['POST'])
 def load_playlist():
     MODEL.client.load(request.form['playlist'])
+
 
 @app.route('/search', methods=['GET','POST'])
 def search():

@@ -66,8 +66,12 @@ function now_playing_update() {
         }
         else {    
         $('#mpd_np_title').text('Stopped');
+        $('#mpd_np_artist').text('Click play to continue');
         document.title = "Jive - Stopped";
         }
+        playing_row = "song_" + json.pos
+        $('tr[id!="' + playing_row + '"]').removeClass('row_hilite');
+        $('#' + playing_row).addClass('row_hilite');
     });
 }
 function duration(s) {
@@ -81,21 +85,6 @@ function duration(s) {
     }
 }
 function playlist_update() {
-    $.getJSON('/playlist', null, function(json) {
-        $('.mpd_playlist_item').remove();
-        playlist = json;
-        if(json) {
-            for(song in json) {
-                song = json[song]
-                new_row = $('#mpd_playlist_row_template').clone()
-                new_row.addClass('mpd_playlist_item')
-                $('.mpd_title', new_row).text(song.title)
-                $('.mpd_artist', new_row).text(song.artist)
-                $('.mpd_duration', new_row).text(duration(song.time))
-                new_row.show()
-                $('#mpd_playlist').append(new_row);
-            }
-        }
-    });
+    window.location.reload();
 }
 setInterval(status_update, 1000);

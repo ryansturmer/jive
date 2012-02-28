@@ -1,5 +1,6 @@
 import socket
 import datetime
+import threading
 
 def timestamp(t):
     return datetime.datetime.fromtimestamp(float(t))
@@ -90,8 +91,9 @@ class MPDClient(object):
     def __init__(self, hostname='localhost', port=6600):
         self.hostname = hostname
         self.port = port
+        self.lock = threading.Lock()
         self.connect()
-    
+
     def connect(self):
         self.socket = socket.create_connection((self.hostname, self.port))
         msg = self.__recv()
@@ -105,6 +107,7 @@ class MPDClient(object):
         lines = []
         line = []
         done = False
+        self.lock.acquire()
         while True:
             for c in self.__recv():
                 if c == '\n':
@@ -120,6 +123,7 @@ class MPDClient(object):
                     line.append(c)
             if done:
                 break
+        self.lock.release()
         return lines
 
     def __send(self, data):
