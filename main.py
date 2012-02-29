@@ -81,6 +81,12 @@ def index():
     print status
     return render_template('index.html', playlist=playlist, status=status)
 
+@app.route('/kindle')
+def kindle():
+    playlist = MODEL.playlistinfo()
+    status = MODEL.status()
+    return render_template('kindle.html', playlist=playlist, status=status)
+
 @app.route('/play', methods=['POST'])
 def play():
     MODEL.play()
@@ -169,4 +175,4 @@ def shuffle():
     return ''
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)

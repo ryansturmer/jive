@@ -3,20 +3,33 @@ jQuery.extend({
           return jQuery.post(url, data, callback, "json");
        }
 });
+function mpd_play() {
+    $.post('/play');
+}
+function mpd_stop() {
+    $.post('/stop');
+}
+function mpd_previous() {
+    $.post('prev');
+}
+function mpd_next() {
+    $.post('/next');
+}
 
 // Play COntrols in the header
 $('.mpd_play_button').click(function(event) {
-    $.post('/play');
+    mpd_play();
 });
 $('.mpd_stop_button').click(function(event) {
-    $.post('/stop');
+    mpd_stop();
 });
 $('.mpd_previous_button').click(function(event) {
-    $.post('/prev');
+    mpd_previous();
 });
 $('.mpd_next_button').click(function(event) {
-    $.post('/next');
+    mpd_next();
 });
+
 volume_slider = $('#mpd_header_volume');
 volume_slider.slider({
     orientation:'horizontal', 
@@ -87,4 +100,3 @@ function duration(s) {
 function playlist_update() {
     window.location.reload();
 }
-setInterval(status_update, 1000);

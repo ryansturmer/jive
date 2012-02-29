@@ -23,7 +23,7 @@
                     {% for result in results %}
                     <tr id="row_{{loop.index}}">
                         <td>{{result.playlist}}</td>
-                        <td style="text-align:right;"><a class="btn" href="#" onclick="load_playlist('{{result.playlist}}')">Replace</a></td>
+                        <td style="text-align:right;"><a class="btn" href="#" onclick="load_playlist('{{result.playlist}}')">Add</a></td>
                     </tr>
                     {% endfor %}
                 </table>
@@ -37,5 +37,6 @@
 <script language="javascript">
     // On Page init:
     status_update();
+    setInterval(status_update, 1000);
 </script>
 {% endblock %}
