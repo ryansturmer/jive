@@ -97,9 +97,9 @@ class MPDClient(object):
 
     def connect(self):
         #self.socket = socket.create_connection((self.hostname, self.port))
-        with Timer('socket.socket'):
+        with Timer('socket.socket', greater_than=1.0):
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        with Timer('socket.connect'):
+        with Timer('socket.connect', greater_than=1.0):
             self.socket.connect((self.hostname, self.port))
         msg = self.__recv()
         ok,mpd,version = msg.split()
@@ -138,7 +138,7 @@ class MPDClient(object):
     def __send(self, data):
         return self.socket.send(data)
     def __recv(self):
-        with Timer('socket.recv'):
+        with Timer('socket.recv', greater_than=1.0):
             data = self.socket.recv(4096)
         return data
     # Querying MPD's status
