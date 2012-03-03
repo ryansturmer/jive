@@ -15,8 +15,11 @@ function mpd_previous() {
 function mpd_next() {
     $.post('/next');
 }
+function mpd_pause() {
+    $.post('/pause');
+}
 
-// Play COntrols in the header
+// Play Controls in the header
 $('.mpd_play_button').click(function(event) {
     mpd_play();
 });
@@ -28,6 +31,9 @@ $('.mpd_previous_button').click(function(event) {
 });
 $('.mpd_next_button').click(function(event) {
     mpd_next();
+});
+$('.mpd_pause_button').click(function(event) {
+    mpd_pause();
 });
 
 volume_slider = $('#mpd_header_volume');
@@ -60,6 +66,8 @@ function status_update(callback) {
     $.getJSON('/status', null, function(json) {
         $('#mpd_header_playlist').text('Now Playing (' + json.playlistlength + ')');
         $('#mpd_header_volume').slider('value', json.volume);
+        
+        
         $('#mpd_seek_slider').slider('option', {
             'max': json.duration,
             'value': json.time
@@ -87,16 +95,7 @@ function now_playing_update() {
         $('#' + playing_row).addClass('row_hilite');
     });
 }
-function duration(s) {
-    a = Math.floor(s/60);
-    b = s % 60;
-    if(isNaN(a) || isNaN(b)) {
-        return "";
-    }
-    else {
-        return a + ":" + b;
-    }
-}
+
 function playlist_update() {
     window.location.reload();
 }

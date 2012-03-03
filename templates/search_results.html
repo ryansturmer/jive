@@ -22,7 +22,7 @@
                         <tr><th>Title</th><th>Artist</th></tr>
                     </thead>
                     {% for result in results %}
-                    <tr id="row_{{loop.index}}" onclick="result_toggle(event, '{{result.file | safe }}')">
+                    <tr id="row_{{loop.index}}" onclick="result_toggle(event, '{{result.file | safe }}')" class="unselectable pointer">
                         <td>{{result.title}}</td>
                         <td>{{result.artist}}</td>
                     </tr>

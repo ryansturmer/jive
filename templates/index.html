@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block content %} 
-    <div class="container">
+{% block content %}
+    <div class="container-fluid">
         <div class="subnav">
             <ul class="nav nav-pills">
                 <li><a href="#" id="mpd_shuffle_playlist">Shuffle Playlist</a></li>
                 <li><a href="#" id="mpd_clear_playlist">Clear Playlist</a></li>
             </ul>
         </div>
-        <div class="row">
+        <div class="row-fluid">
             <div class="span12">
                 <h2 id="mpd_np_title">{{status.title or "Stopped"}}</h2>        
                 <h3 id="mpd_np_artist">{{status.artist or "Click play to continue" }}</h3>
@@ -17,14 +17,14 @@
             </div>
 
         </div>
-        <div class="row">
+        <div class="row-fluid">
             <div class="span12">
                 <table class="table" id="mpd_playlist">
                     <thead>
                         <tr><th>Title</th><th>Artist</th><th>Duration</th></tr>
                     </thead>
                     {% for song in playlist %}
-                    <tr id="song_{{song.pos}}">
+                    <tr id="song_{{song.pos}}" class="unselectable pointer">
                         <td>{{song.title}}</td>
                         <td>{{song.artist}}</td>
                         <td>{{song.duration}}</td>
@@ -40,7 +40,7 @@
 
 {% block code %}
 <script language="javascript">
-    $('#mpd_seek_slider').slider({'range':'min', 'animate':'fast'});
+    $('#mpd_seek_slider').slider({'range':'min', 'max': {{status.duration}}, 'value':{{status.time}}});
     status_update();
     now_playing_update();
 
@@ -50,6 +50,16 @@
             window.location.reload();
         }); 
     };
+
+    // Keyboard nav for kindle
+    $(document).keypress(function(event) {
+        if($('#search_input').is(':focus')) {
+            return; // Don't do nav if the one and only text input has focus.
+        }
+        if(event.which == 78 || event.which == 110) mpd_next();
+        else if(event.which == 80 || event.which == 112) mpd_play();
+        else if(event.which == 83 || event.which == 115) mpd_stop();
+    });
 
     setInterval(now_playing_update, 1500);
     setInterval(status_update, 1000);
