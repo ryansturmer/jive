@@ -15,7 +15,7 @@ class JiveModel(object):
             client.play()
     def pause(self): 
         with mpd.connect(self.host, self.port) as client:
-            client.pause()
+            client.pause(1)
     def previous(self): 
         with mpd.connect(self.host, self.port) as client:
             client.previous()

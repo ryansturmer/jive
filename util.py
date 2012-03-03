@@ -67,7 +67,7 @@ class Timer(object):
                 display = False
         
         if display:
-            s = "Time for %s: " % name if name else ''
+            s = ("Time for %s: " % self.name) if self.name else ''
             if diff < 1.0:
                 print "%s%g ms" % (s, round(diff*1000,1))
             else:
