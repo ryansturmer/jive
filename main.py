@@ -6,6 +6,9 @@ from flask import Flask, render_template, request, redirect
 # MPD Stuff
 import mpd
 
+HOST = 'carmen'
+PORT = '6600'
+
 def normalize(d, mapping):
     for key, alts in mapping.items():
         if key not in d or not d[key]:
@@ -25,25 +28,41 @@ def fmt_time(seconds):
 
 class Model(object):
     def __init__(self, host, port):
-        self.client = mpd.MPDClient(host, port)
         self.last_search_results = {}
         self.last_search = (None, None)
+        self.host, self.port = (host, port)
 
-    def next(self): self.client.next()
-    def play(self): self.client.play()
-    def previous(self): self.client.previous()
-    def stop(self): self.client.stop()
+    def next(self): 
+        with mpd.connect(self.host, self.port) as client:
+            client.next()
+    def play(self): 
+        with mpd.connect(self.host, self.port) as client:
+            client.play()
+    
+    def previous(self): 
+        with mpd.connect(self.host, self.port) as client:
+            client.previous()
+    def stop(self): 
+        with mpd.connect(self.host, self.port) as client:
+            client.stop()
 
+    def setvol(self,x): 
+        with mpd.connect(self.host, self.port) as client:
+            client.setvol(x)
+    
     def search(self, type, what):
         self.last_search = (type, what)
-        results = self.client.search(type, what)
+        with mpd.connect(self.host, self.port) as client:
+            results = client.search(type, what)
         results = [x for x in results if 'file' in x and x['file'].strip() != '']
         for result in results:
             normalize(result, {'title' : ('file',)})
         self.last_search_results = results
         return results
+    
     def status(self):
-        status = self.client.status()
+        with mpd.connect(self.host, self.port) as client:
+            status = client.status()
         try:
             a,b = status.pop('time')
             status['time'] = a.seconds
@@ -53,7 +72,8 @@ class Model(object):
         return status
 
     def playlistinfo(self):
-        info = self.client.playlistinfo()
+        with mpd.connect(self.host, self.port) as client:
+            info = client.playlistinfo()
         info = [item for item in info if item]
         for item in info:
             normalize(item, {'title' : ('file',)})
@@ -61,14 +81,29 @@ class Model(object):
         return info
 
     def listplaylists(self):
-        info = self.client.listplaylists()
-        print info
+        with mpd.connect(self.host, self.port) as client:
+            info = client.listplaylists()
         return info
 
     def add(self, *songs):
-        for song in songs:
-            self.client.add(song)
-HOST = 'carmen'
+        with mpd.connect(self.host, self.port) as client:
+            for song in songs:
+                client.add(song)
+    def clear(self):
+        with mpd.connect(self.host, self.port) as client:
+            client.clear()
+    def delete(self, song):
+        with mpd.connect(self.host, self.port) as client:
+            client.delete(song)
+
+    def load(self, song):
+        with mpd.connect(self.host, self.port) as client:
+            client.load(song)
+
+    def currentsong(self):
+        with mpd.connect(self.host, self.port) as client:
+            return client.currentsong()
+HOST = '192.168.1.146'
 PORT = '6600'
 MODEL = Model(HOST, PORT)
 # Flask Code
@@ -108,12 +143,12 @@ def prev():
     return ''
 
 @app.route('/setvol', methods=['POST'])
-def prev():
+def setvol():
     try:
         vol = request.form['volume']
     except KeyError, e:
         raise e
-    MODEL.client.setvol(vol)
+    MODEL.setvol(vol)
     return ''
 @app.route('/song_delete', methods=['POST'])
 def song_delete():
@@ -122,17 +157,17 @@ def song_delete():
     except KeyError, e:
         raise e
     print song
-    MODEL.client.delete(song)
+    MODEL.delete(song)
     return ''
 @app.route('/clear_playlist', methods=['POST'])
 def clear_playlist():
-    MODEL.client.clear()
+    MODEL.clear()
     return ''
 
 @app.route('/load_playlist', methods=['POST'])
 def load_playlist():
-    MODEL.client.load(request.form['playlist'])
-
+    MODEL.load(request.form['playlist'])
+    return ''
 
 @app.route('/search', methods=['GET','POST'])
 def search():
@@ -166,7 +201,7 @@ def status():
 
 @app.route('/now_playing', methods=['GET'])
 def now_playing():
-    p = MODEL.client.currentsong()
+    p = MODEL.currentsong()
     return json.dumps(p)
 
 @app.route('/shuffle', methods=['POST'])

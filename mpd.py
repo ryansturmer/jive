@@ -1,6 +1,8 @@
 import socket
 import datetime
 import threading
+from contextlib import contextmanager
+from util import Timer
 
 def timestamp(t):
     return datetime.datetime.fromtimestamp(float(t))
@@ -8,7 +10,7 @@ def timestamp(t):
 def duration(t):
     return datetime.timedelta(seconds=int(t))
 
-def time(t):
+def f_time(t):
     a,b = t.split(":")
     return datetime.timedelta(seconds=int(a)), datetime.timedelta(seconds=int(b))
 
@@ -90,26 +92,34 @@ class MPDException(Exception): pass
 class MPDClient(object):
     def __init__(self, hostname='localhost', port=6600):
         self.hostname = hostname
-        self.port = port
-        self.lock = threading.Lock()
+        self.port = int(port)
         self.connect()
 
     def connect(self):
-        self.socket = socket.create_connection((self.hostname, self.port))
+        #self.socket = socket.create_connection((self.hostname, self.port))
+        with Timer('socket.socket'):
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        with Timer('socket.connect'):
+            self.socket.connect((self.hostname, self.port))
         msg = self.__recv()
-        ok,mpd, version = msg.split()
+        ok,mpd,version = msg.split()
         if mpd != 'MPD' or ok != 'OK':
             raise MPDException("Malformed welcome from MPD server: '%s'" % msg)
         self.version = version
+
+    def close(self):
+        self.socket.close()
 
     def cmd(self, cmd):
         self.__send(cmd + '\n' if not cmd.endswith('\n') else cmd)
         lines = []
         line = []
         done = False
-        self.lock.acquire()
         while True:
-            for c in self.__recv():
+            data = self.__recv()
+            if len(data) == 0:
+                raise Exception("Host closed connection.")
+            for c in data:
                 if c == '\n':
                     s = ''.join(line)
                     line = []
@@ -123,14 +133,14 @@ class MPDClient(object):
                     line.append(c)
             if done:
                 break
-        self.lock.release()
         return lines
 
     def __send(self, data):
         return self.socket.send(data)
     def __recv(self):
-        return self.socket.recv(4096)
-
+        with Timer('socket.recv'):
+            data = self.socket.recv(4096)
+        return data
     # Querying MPD's status
     @mpd_command
     def clearerror(self):pass
@@ -141,7 +151,7 @@ class MPDClient(object):
     @mpd_command
     def idle(self):pass
     
-    @mpd_command(returns=dict, types={'playlist': int, 'time':time})
+    @mpd_command(returns=dict, types={'playlist': int, 'time':f_time})
     def status(self): pass
 
     @mpd_command(returns=dict)
@@ -272,13 +282,20 @@ class MPDClient(object):
     @mpd_command(returns=list)
     def search(self, type, what): pass
 
+@contextmanager
+def connect(host, port):
+    client = MPDClient(host, port)
+    try:
+        yield client
+    finally:
+        client.close()
+
 if __name__ == "__main__":
-    client = MPDClient('carmen')
-    print client.version
-    print client.listplaylists()
-    print client.currentsong()
-    print client.status()
-    stats = client.stats()
-    playtime = stats['db_playtime']
-    print stats
-    client.socket.close()
+    with connect('carmen', 6600) as client:
+        print client.version
+        print client.listplaylists()
+        print client.currentsong()
+        print client.status()
+        stats = client.stats()
+        playtime = stats['db_playtime']
+        print stats
