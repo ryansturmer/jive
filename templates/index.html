@@ -40,7 +40,7 @@
 
 {% block code %}
 <script language="javascript">
-    $('#mpd_seek_slider').slider({'range':'min', 'max': {{status.duration}}, 'value':{{status.time}}});
+    $('#mpd_seek_slider').slider({'range':'min', 'max': {{status.duration or 100}}, 'value':{{status.time or 0}}});
     status_update();
     now_playing_update();
 
