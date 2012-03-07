@@ -3,7 +3,7 @@ Jive - Web frontend for MPD (The Music Player Daemon)
 
 ### Summary
 
-Jive is a web-based frontend for MPD, written in python.  It provides
+Jive is a web-based frontend for MPD written in python.  It provides
 a simple interface to your music library, and basic play controls.
 
 ### Features
@@ -32,6 +32,6 @@ run main.py.
 
 ### Configuration
 
-jive.cfg is the configuration file for jive, which will be created on first run, 
-if it doesn't already exist.  You can change the host/port of the MPD server, and 
-the port on which Jive hosts itself for development.  It's pretty self explanatory.
+jive.cfg will be created on first run,if it doesn't already exist.  
+You can edit it to change the host/port of the MPD server, and 
+the port on which Jive hosts itself for development.
