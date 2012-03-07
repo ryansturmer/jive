@@ -53,12 +53,16 @@
 
     // Keyboard nav for kindle
     $(document).keypress(function(event) {
+        //alert(event.which);
         if($('#search_input').is(':focus')) {
             return; // Don't do nav if the one and only text input has focus.
         }
         if(event.which == 78 || event.which == 110) mpd_next();
         else if(event.which == 80 || event.which == 112) mpd_play();
         else if(event.which == 83 || event.which == 115) mpd_stop();
+        else if(event.which == 85 || event.which == 117) mpd_volume_up();
+        else if(event.which == 68 || event.which == 100) mpd_volume_down();
+
     });
 
     setInterval(now_playing_update, 1500);

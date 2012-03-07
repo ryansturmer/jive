@@ -20,12 +20,6 @@ def index():
     print status
     return render_template('index.html', playlist=playlist, status=status)
 
-@app.route('/kindle')
-def kindle():
-    playlist = MODEL.playlistinfo()
-    status = MODEL.status()
-    return render_template('kindle.html', playlist=playlist, status=status)
-
 @app.route('/play', methods=['POST'])
 def play():
     MODEL.play()

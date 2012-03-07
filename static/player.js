@@ -4,19 +4,32 @@ jQuery.extend({
        }
 });
 function mpd_play() {
-    $.post('/play');
+    $.post('/play', null, full_update);
 }
 function mpd_stop() {
-    $.post('/stop');
+    $.post('/stop', null, full_update);
 }
 function mpd_previous() {
-    $.post('prev');
+    $.post('prev', null,full_update);
 }
 function mpd_next() {
-    $.post('/next');
+    $.post('/next', null, full_update);
 }
 function mpd_pause() {
-    $.post('/pause');
+    $.post('/pause', null, status_update);
+}
+function mpd_set_volume(x) {
+    $.post('/setvol', {'volume':x}, status_update);
+}
+function mpd_volume_up() {
+    x = mpd_volume + 10;
+    x = x > 100 ? 100 : x;
+    mpd_set_volume(x);
+}
+function mpd_volume_down() {
+    x = mpd_volume - 10;
+    x = x < 0 ? 0 : x;
+    mpd_set_volume(x);
 }
 
 // Play Controls in the header
@@ -62,11 +75,16 @@ current_song_id = null;
 function load_playlist(list) {
     $.post('/load_playlist', {'playlist':list});
 }
+
+function full_update() {
+    status_update();
+    now_playing_update();
+}
 function status_update(callback) {
     $.getJSON('/status', null, function(json) {
         $('#mpd_header_playlist').text('Now Playing (' + json.playlistlength + ')');
         $('#mpd_header_volume').slider('value', json.volume);
-        
+        mpd_volume = json.volume 
         
         $('#mpd_seek_slider').slider('option', {
             'max': json.duration,
