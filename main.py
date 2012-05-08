@@ -1,7 +1,8 @@
 import datetime
 import json
 import uuid
-from flask import Flask, render_template, request, redirect
+import urllib
+from flask import Flask, render_template, request, redirect, Markup
 
 import mpd
 from util import Timer, fmt_time, get_config, normalize
@@ -12,12 +13,18 @@ MODEL = JiveModel(CONFIG.get('mpd', 'host'), CONFIG.get('mpd', 'port'))
 
 # Flask Code
 app = Flask(__name__)
+@app.template_filter('urlencode')
+def urlencode_filter(s):
+    if type(s) == 'Markup':
+        s = s.unescape()
+    s = s.encode('utf8')
+    s = urllib.quote_plus(s)
+    return Markup(s)
 
 @app.route('/')
 def index():
     playlist = MODEL.playlistinfo()
     status = MODEL.status()
-    print status
     return render_template('index.html', playlist=playlist, status=status)
 
 @app.route('/play', methods=['POST'])
@@ -83,9 +90,24 @@ def search():
         result['file'] = result['file'].replace("'", "\\'")
     return render_template('search_results.html', results=results, status=status)
 
+@app.route('/browse', methods=['GET'])
+def browse():
+    location = request.args.get('dir', '/')
+    status = MODEL.status()
+    listing = MODEL.list(location)
+    dirs = location.split('/')
+    path = [('','')]
+    for dir in dirs:
+         path.append((dir, (path[-1][1] + '/' + dir).strip('/')))
+    path[0] = ('', '/')
+    path = [p for p in path if p != ('','')]
+    return render_template('browser.html',status=status, listing=listing, path=path)
+
 @app.route('/add', methods=['POST'])
 def add():
+    print request.form
     for item in request.form:
+        print item
         MODEL.add(item)
     return json.dumps(MODEL.status())
 

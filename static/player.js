@@ -32,6 +32,13 @@ function mpd_volume_down() {
     mpd_set_volume(x);
 }
 
+function mpd_add(uris, callback) {
+    $.postJSON('/add', uris, function(data) {
+            status_update();
+            callback(data);
+        });
+}
+
 // Play Controls in the header
 $('.mpd_play_button').click(function(event) {
     mpd_play();

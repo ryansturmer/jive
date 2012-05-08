@@ -25,7 +25,16 @@ class JiveModel(object):
     def setvol(self,x): 
         with mpd.connect(self.host, self.port) as client:
             client.setvol(x)
-    
+
+    def list(self, uri):
+        with mpd.connect(self.host, self.port) as client:
+            listing = client.lsinfo(uri)
+        for d in listing:
+            if 'directory' in d:
+                d['dirname'] = d['directory'].split('/')[-1]
+            if 'file' in d:
+                normalize(d, {'title' : ('file',)})
+        return listing
     def search(self, type, what):
         self.last_search = (type, what)
         with mpd.connect(self.host, self.port) as client:

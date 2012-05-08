@@ -282,6 +282,9 @@ class MPDClient(object):
     @mpd_command(returns=list)
     def search(self, type, what): pass
 
+    @mpd_command(returns=list)
+    def lsinfo(self, uri): pass
+
 @contextmanager
 def connect(host, port):
     client = MPDClient(host, port)
