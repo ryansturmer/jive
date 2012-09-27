@@ -88,6 +88,10 @@ class JiveModel(object):
         with mpd.connect(self.host, self.port) as client:
             client.load(song)
 
+    def seek(self, song, time):
+        with mpd.connect(self.host, self.port) as client:
+            client.seek(song, time)
+    
     def currentsong(self):
         with mpd.connect(self.host, self.port) as client:
             current_song = client.currentsong()

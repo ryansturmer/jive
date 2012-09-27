@@ -138,5 +138,16 @@ def shuffle():
     MODEL.client.shuffle()
     return ''
 
+@app.route('/seek', methods=['POST'])
+def seek():
+    try:
+        song = request.form['song']
+        time = request.form['time']
+    except KeyError, e:
+        raise e
+    print song, time
+    MODEL.seek(song, 0)
+    return ''
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=CONFIG.getint('jive', 'port'), debug=True)

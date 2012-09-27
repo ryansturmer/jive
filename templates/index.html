@@ -24,7 +24,7 @@
                         <tr><th>Title</th><th>Artist</th><th>Duration</th></tr>
                     </thead>
                     {% for song in playlist %}
-                    <tr id="song_{{song.pos}}" class="unselectable pointer">
+                    <tr id="song_{{song.pos}}" class="unselectable pointer" onclick="song_jumpto(event, {{song.pos}})">
                         <td>{{song.title}}</td>
                         <td>{{song.artist}}</td>
                         <td>{{song.duration}}</td>
@@ -49,6 +49,12 @@
         $.post('/song_delete', $.param({'song': song}), function() {
             window.location.reload();
         }); 
+    };
+    
+    function song_jumpto(event, song) {
+        $.post('/seek', $.param({'song': song, 'time': 0}), function() {
+            now_playing_update();
+            });
     };
 
     // Keyboard nav for kindle
