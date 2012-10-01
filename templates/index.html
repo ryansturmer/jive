@@ -8,6 +8,13 @@
             </ul>
         </div>
         <div class="row-fluid">
+            <a class="btn btn-info mpd_previous_button">&lt;&lt;</a>
+            <a class="btn btn-danger mpd_stop_button">Stop</a>
+            <a class="btn btn-success mpd_play_button">Play</a>
+            <a class="btn btn-info mpd_next_button">&gt;&gt;</a>
+        </div>
+
+        <div class="row-fluid"> 
             <div class="span12">
                 <h2 id="mpd_np_title">{{status.title or "Stopped"}}</h2>        
                 <h3 id="mpd_np_artist">{{status.artist or "Click play to continue" }}</h3>
@@ -15,22 +22,27 @@
                 <div id="mpd_seek_slider"></div>
                 <br />
             </div>
-
         </div>
         <div class="row-fluid">
             <div class="span12">
                 <table class="table" id="mpd_playlist">
                     <thead>
-                        <tr><th>Title</th><th>Artist</th><th>Duration</th></tr>
+                        <tr>
+                            <th class="playlist-header">Title</th>
+                            <th class="hidden-phone">Artist</th>
+                            <th class="hidden-phone">Duration</th>
+                        </tr>
                     </thead>
+                    <tbody>
                     {% for song in playlist %}
                     <tr id="song_{{song.pos}}" class="unselectable pointer" onclick="song_jumpto(event, {{song.pos}})">
-                        <td>{{song.title}}</td>
-                        <td>{{song.artist}}</td>
-                        <td>{{song.duration}}</td>
+                        <td class="playlist-entry">{{song.title}}</td>
+                        <td class="hidden-phone playlist-entry">{{song.artist}}</td>
+                        <td class="hidden-phone playlist-entry">{{song.duration}}</td>
                         <td style="text-align:right;"><a class="close" onclick="song_delete(event, {{song.pos}})">&times;</a></td>
                     </tr>
                     {% endfor %}
+                </tbody>
                 </table>
             </div>
         </div>

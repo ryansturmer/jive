@@ -24,6 +24,9 @@ def urlencode_filter(s):
 @app.route('/')
 def index():
     playlist = MODEL.playlistinfo()
+    print len(playlist)
+    for item in playlist:
+        print item
     status = MODEL.status()
     return render_template('index.html', playlist=playlist, status=status)
 
@@ -84,6 +87,10 @@ def search():
     search_type = 'any'
     search_term = request.args.get('q', None)
     results = MODEL.search(search_type, search_term) if search_term else MODEL.last_search_results
+    print results
+    for result in results:
+        #print result.get('title')
+        print result
     status = MODEL.status()
 
     for result in results:
@@ -114,6 +121,7 @@ def add():
 @app.route('/playlist', methods=['GET'])
 def playlist():
     info = MODEL.playlistinfo()
+    print info
     return json.dumps(info)
 
 @app.route('/playlists', methods=['GET'])
