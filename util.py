@@ -21,7 +21,8 @@ def fmt_time(seconds):
 
 
 def get_config():
-    CFG_FILE = 'jive.cfg'
+    path, file = os.path.split(__file__)
+    CFG_FILE = os.path.join(path,'jive.cfg')
     config = ConfigParser.RawConfigParser()
     config.add_section('jive')
     config.set('jive', 'port', 5000)
