@@ -16,15 +16,22 @@
     cursor: pointer;
 }
 body {
-    padding-top: 40px;
     height: 100%;
     background: url(/static/images/speaker_bkgnd.png) no-repeat center center fixed transparent;
+    padding-top: 40px;
 }
 @media screen and (max-width: 767px) {
-    .playlist-entry, .playlist-header {
-        font-size: 150%;
-    }
-
     body {
     }
 }
+
+.brand {
+	padding-left: 20px;
+	
+}
+.control-icon {
+    font-size: 24;
+}
+.control-pills {
+}
+

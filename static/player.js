@@ -3,6 +3,7 @@ jQuery.extend({
           return jQuery.post(url, data, callback, "json");
        }
 });
+
 function mpd_play() {
     $.post('/play', null, full_update);
 }

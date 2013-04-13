@@ -11,36 +11,35 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/speaker-icon-16x16.png')}}" />
 </head>
 <body>
-    <div class="navbar navbar-fixed-top navbar-inverse">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="/">Jive</a>
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li><a id="mpd_header_playlist" href="/">Now Playing ({{status.playlistlength}})</a></li>
-              <li><a id="mpd_header_browse" href="/browse">Browse</a></li>
-              <li><a id="mpd_header_playlists" href="/playlists">Playlists</a></li>
-            </ul>
-            <ul class="nav pull-right">
-              <li><a href="#">Volume:</a></li>
-              <li><a style="width:100px; vertical-align:middle;"><div id="mpd_header_volume"></div></a></li>
-              <li><a href="#">Search Music</a></li>
-              <li class="">
-                <form class="navbar-search" id="search" action="search">
-                  <input type="text" id="search_input" name="q" class="search-query" placeholder="Search Library..." />
-                </form>
-              </li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
-
+	<div class="navbar navbar-fixed-top">
+	  <div class="navbar-inner">
+	    <div class="container">
+	      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	      </a>
+	      <a class="brand" href="/">Jive</a>
+	        <ul class="nav">
+	            <li class="divider-vertical"></li>
+	            <li><a href="#"><i class="iconic-first mpd_previous_button control-icon"></i></a></li>
+	            <li class="divider-vertical"></li>
+	            <li><a href="#"><i class="iconic-stop mpd_stop_button control-icon"></i></a></li>
+	            <li class="divider-vertical"></li>
+	            <li><a href="#"><i class="iconic-play mpd_play_button control-icon"></i></a></li>
+	            <li class="divider-vertical"></li>
+	            <li><a href="#"><i class="iconic-last mpd_next_button control-icon"></i></a></li>
+	            <li class="divider-vertical"></li>
+	            <li><a href="browse"><i class="iconic-folder control-icon"></i></a></li>
+	        </ul>
+	       	<div class="nav-collapse">
+	        <form class="navbar-search pull-right" action="">
+	          <input type="text" id="search_input" name="q" class="search-query" placeholder="Search Library..." />
+	        </form>
+	      </div><!-- /.nav-collapse -->
+	    </div><!-- /.container -->
+	  </div><!-- /.navbar-inner -->
+	</div><!-- /.navbar -->
     {% block content %}
 
     {% endblock %}
