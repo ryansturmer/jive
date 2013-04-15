@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-
 <ul class="breadcrumb">
     {% for dir,uri in path %}
     <li><a href="browse?dir={{uri | urlencode}}">{{dir}}</a></li><span class="divider">/</span>
@@ -12,12 +11,11 @@
                 <table class="table">
                 {% for entry in listing %}
                     <tr id="" class="unselectable pointer">
-                        
                     {% if 'file' in entry %}
-                        <td>{{ entry.title }}</td>
+                        <td><i class="iconic-document-alt"></i>&nbsp;{{ entry.title }}</td>
                     {% endif %}
                     {% if 'directory' in entry %}
-                    <td><a href="/browse?dir={{entry.directory | urlencode}}">{{ entry.dirname }}</a></td>
+                    <td><i class="iconic-folder"></i>&nbsp;<a href="/browse?dir={{entry.directory | urlencode}}">{{ entry.dirname }}</a></td>
                     <td style="text-align:right;"><a class='btn' onclick='mpd_add({{ entry.directory | tojson}});'>Add to playlist</a></td>
                     {% endif %}
                     </tr>
