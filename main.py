@@ -30,6 +30,10 @@ def index():
     status = MODEL.status()
     return render_template('index.html', playlist=playlist, status=status)
 
+@app.route('/info', methods=['GET'])
+def info():
+    return render_template('info.html', status=MODEL.status(), data=MODEL.info())
+
 @app.route('/play', methods=['POST'])
 def play():
     MODEL.play()

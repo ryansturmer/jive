@@ -9,4 +9,6 @@
 *.sqlite
 *.sqlite3
 *.swp
+httpd.conf
+*.wsgi
 deps
